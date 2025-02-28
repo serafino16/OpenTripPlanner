@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: otp-core-service
+  namespace: opentripplanner
+spec:
+  hosts:
+  - "https://www.opentripplanner.org/" 
+  gateways:
+  - otp-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/otp"
+    route:
+    - destination:
+        host: otp-core-service.opentripplanner.svc.cluster  
+        port:
+          number: 8080  
