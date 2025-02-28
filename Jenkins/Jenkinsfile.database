@@ -1,0 +1,77 @@
+pipeline {
+    agent any
+
+    environment {
+        
+        AWS_REGION = 'us-west-2'                
+        ECR_REPO_NAME = 'eks-repository'  
+        IMAGE_TAG = "database-${BUILD_NUMBER}"    
+        EKS_CLUSTER_NAME = 'OTP-cluster'    
+        K8S_DEPLOYMENT_NAME = 'PostgreSQL-statefulset' 
+        K8S_NAMESPACE = 'opentripplanner'               
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                
+                git 'https://github.com/serafino16/OpenTripPlanner'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    
+                    sh """
+                        docker build -t ${ECR_REPO_NAME}:${IMAGE_TAG} -f Dockerfile.database .
+                    """
+                }
+            }
+        }
+
+        stage('Login to Amazon ECR') {
+            steps {
+                script {
+                    
+                    def ecrLogin = sh(script: "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", returnStdout: true).trim()
+                    
+                    sh "${ecrLogin}"
+                }
+            }
+        }
+
+        stage('Push Docker Image to ECR') {
+            steps {
+                script {
+                    
+                    sh """
+                        docker tag ${ECR_REPO_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
+                        docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
+                    """
+                }
+            }
+        }
+
+        stage('Update EKS Deployment') {
+            steps {
+                script {
+                    
+                    sh """
+                        kubectl set image deployment/${K8S_DEPLOYMENT_NAME} ${K8S_DEPLOYMENT_NAME}=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG} --namespace ${K8S_NAMESPACE}
+                        kubectl rollout status deployment/${K8S_DEPLOYMENT_NAME} --namespace ${K8S_NAMESPACE}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Database deployment completed successfully!"
+        }
+        failure {
+            echo "Database deployment failed. Please check the logs."
+        }
+    }
+}
