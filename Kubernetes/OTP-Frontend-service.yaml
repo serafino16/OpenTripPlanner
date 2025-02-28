@@ -1,0 +1,72 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otp-frontend
+  namespace: opentripplanner
+  labels:
+    app: otp-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: otp-frontend
+  template:
+    metadata:
+      labels:
+        app: otp-frontend
+    spec:
+      serviceAccountName: otp-frontend-service-account
+      containers:
+        - name: otp-frontend
+          image: opentripplanner/otp-frontend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: OTP_API_URL
+              value: "http://opentripplanner-service/otp"  
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: frontend-config
+          configMap:
+            name: otp-frontend-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otp-frontend-service
+  namespace: opentripplanner
+spec:
+  selector:
+    app: otp-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: otp-frontend-service-account
+  namespace: opentripplanner

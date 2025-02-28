@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otp-frontend-config
+  namespace: opentripplanner
+data:
+  config.js: |
+    window.OTP_CONFIG = {
+      apiBaseUrl: "http://opentripplanner-service/otp",
+      routerId: "default"
+    };

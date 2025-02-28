@@ -1,0 +1,74 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: service-manager-binding
+  namespace: opentripplanner  
+subjects:
+  - kind: ServiceAccount
+    name: postgresql
+    namespace: opentripplanner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: service-manager
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: service-manager-binding
+  namespace: opentripplanner  
+subjects:
+  - kind: ServiceAccount
+    name: potp-core-service-account
+    namespace: opentripplanner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: service-manager
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: service-manager-binding
+  namespace: opentripplanner  
+subjects:
+  - kind: ServiceAccount
+    name: otp-frontend-service-account
+    namespace: opentripplanner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: service-manager
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: service-manager-binding
+  namespace: opentripplanner  
+subjects:
+  - kind: ServiceAccount
+    name: nginx-service-account
+    namespace: opentripplanner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: service-manager
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: service-manager-binding
+  namespace: opentripplanner  
+subjects:
+  - kind: ServiceAccount
+    name: coredns
+    namespace: opentripplanner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: service-manager
+
+
+
+
+

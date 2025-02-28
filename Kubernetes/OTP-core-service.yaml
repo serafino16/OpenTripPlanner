@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otp-core
+  namespace: opentripplanner
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: otp-core
+  template:
+    metadata:
+      labels:
+        app: otp-core
+    spec:
+      serviceAccountName: otp-core-service-account
+      containers:
+        - name: otp-core
+          image: openjdk:17-jdk-slim  
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500Mi"
+            limits:
+              memory: "1Gi"
+              cpu: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /otp/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /otp/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            
+      volumes:
+        - name: otp-config
+          configMap:
+            name: Configmap-frontend  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opentripplanner-service
+  namespace: opentripplanner
+spec:
+  selector:
+    app: otp-core
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: otp-core-service-account
+  namespace: opentripplanner

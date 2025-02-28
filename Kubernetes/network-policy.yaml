@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: otp-core-to-postgresql
+  namespace: opentripplanner  
+spec:
+  podSelector:
+    matchLabels:
+      app: otp-core  
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: PostgreSQL  
+      ports:
+        - protocol: TCP
+          port: 5432  

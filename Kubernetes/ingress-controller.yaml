@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: otp-core-ingress
+  namespace: opentripplanner
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: https://www.opentripplanner.org/
+    http:
+      paths:
+      - path: /otp
+        pathType: Prefix
+        backend:
+          service:
+            name: otp-core
+            port:
+              number: 8080  
