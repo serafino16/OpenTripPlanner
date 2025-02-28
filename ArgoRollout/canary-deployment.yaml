@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: otp-core-rollout
+  namespace: opentripplanner
+spec:
+  replicas: 3
+  strategy:
+    canary:
+      trafficRouting:
+        istio:
+          virtualService:
+            name: otp-core-vs
+            routes:
+              - primary
+      steps:
+        - setWeight: 20  
+        - pause: {duration: 30s}
+        - setWeight: 50  
+        - pause: {duration: 30s}
+        - setWeight: 100 
+  selector:
+    matchLabels:
+      app: otp-core
+  template:
+    metadata:
+      labels:
+        app: otp-core
+        version: canary  
+    spec:
+      containers:
+        - name: otp-core
+          image: openjdk:17-jdk-slim  
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
