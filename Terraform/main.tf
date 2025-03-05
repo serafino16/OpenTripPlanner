@@ -123,21 +123,6 @@ resource "aws_lb" "eks_alb" {
 }
 
 
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.eks_alb.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      status_code = 200
-      content_type = "text/plain"
-      message_body = "OK"
-    }
-  }
-}
-
 
 resource "aws_autoscaling_group" "eks_asg" {
   desired_capacity     = 2
