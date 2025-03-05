@@ -86,10 +86,6 @@ resource "aws_iam_role_policy_attachment" "alb_policy_attach" {
 }
 
 
-resource "aws_iam_role_policy_attachment" "alb_ec2_policy_attach" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
-  role       = aws_iam_role.alb_role.name
-}
 
 
 resource "aws_iam_role_policy_attachment" "alb_eks_policy_attach" {
