@@ -24,7 +24,7 @@ pipeline {
                 script {
                     
                     sh """
-                        docker build -t ${ECR_REPO_NAME}:${IMAGE_TAG} -f Backend.dockerfile .
+                        docker build -t ${ECR_REPO_NAME}:${IMAGE_TAG} -f OTP-Backend.dockerfile .
                     """
                 }
             }
