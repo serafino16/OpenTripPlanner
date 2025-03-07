@@ -1,10 +1,19 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: otp-core-service
+  name: otp-core
   namespace: opentripplanner
 spec:
-  host: otp-core-service.opentripplanner.svc.cluster 
+  host: my-app-service  
+  subsets:
+    - name: stable  
+      labels:
+        version: v1
+    - name: canary  
+      labels:
+        version: v2
   trafficPolicy:
     loadBalancer:
-      simple: least conn 
+      simple: LEAST_CONN
+    tls:
+      mode: ISTIO_MUTUAL  
