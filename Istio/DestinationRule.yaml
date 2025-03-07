@@ -16,4 +16,7 @@ spec:
     loadBalancer:
       simple: LEAST_CONN
     tls:
-      mode: ISTIO_MUTUAL  
+      mode: MUTUAL
+      credentialName: tls-secret
+      privateKey: sds
+      serverCertificate: sds  
