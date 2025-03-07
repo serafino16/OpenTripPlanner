@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-canary
+  namespace: opentripplanner
+spec:
+  replicas: 1  
+  selector:
+    matchLabels:
+      app: my-app
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: my-app
+        version: canary
+    spec:
+      containers:
+        - name: otp-core
+          image: openjdk:18-jdk-slim  
+          ports:
+            - containerPort: 8080
