@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app-canary
+  name: otp-core
   namespace: opentripplanner
 spec:
   replicas: 1  
   selector:
     matchLabels:
-      app: my-app
+      app: otp-core
       version: canary
   template:
     metadata:
       labels:
-        app: my-app
+        app: otp-core
         version: canary
     spec:
       containers:
