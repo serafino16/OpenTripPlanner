@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otp-core
+  namespace: opentripplanner
+spec:
+  replicas: 3  
+  selector:
+    matchLabels:
+      app: otp-core
+      version: stable
+  template:
+    metadata:
+      labels:
+        app: otp-core
+        version: stable
+    spec:
+      containers:
+        - name: otp-core
+          image: openjdk:17-jdk-slim  
+          ports:
+            - containerPort: 8080
